@@ -1,52 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ title }}</title>
-  <link rel="stylesheet" href="/static/styles.css" />
-</head>
-<body>
-  <main>
-    <h1>{{ title }}</h1>
-    <p class="sub">{{ description }} · LLM <span class="pill">{{ llm_mode }}</span></p>
-    <div class="grid">
-      <section class="card">
-        <h2>Create quiz</h2>
-        <form method="post" action="/ui/create">
-        <label>topic</label><input name="topic" placeholder="topic" required />
-<label>level</label><input name="level" placeholder="level" required />
-          <button type="submit">Save</button>
-        </form>
-        <h2 style="margin-top:1.25rem">AI action: {{ action }}</h2>
-        <p class="sub">{{ action_desc }}</p>
-        <form method="post" action="/ui/action">
-          <label>prompt</label>
-          <textarea name="prompt" rows="4" placeholder="Describe what you need..."></textarea>
-          <button type="submit">Run {{ action }}</button>
-        </form>
-        {% if last_result %}
-        <h3>Last result</h3>
-        <pre>{{ last_result }}</pre>
-        {% endif %}
-      </section>
-      <section class="card">
-        <h2>{{ resource }} ({{ items|length }})</h2>
-        <table>
-          <thead><tr><th>id</th><th>data</th></tr></thead>
-          <tbody>
-          {% for item in items %}
-            <tr>
-              <td>{{ item.id }}</td>
-              <td><code>{{ item }}</code></td>
-            </tr>
-          {% else %}
-            <tr><td colspan="2">No items yet</td></tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </section>
-    </div>
-  </main>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>{{ title }}</title><link rel="stylesheet" href="/static/styles.css"/></head><body><main>
+<h1>{{ title }}</h1><p class="sub">Author questions, attempt answers, get coaching on misses.</p>
+<div class="grid"><section class="card">
+<form method="post" action="/ui/questions"><label>Prompt</label><textarea name="prompt" rows="2" required></textarea>
+<label>Answer</label><input name="answer" required/><label>Topic</label><input name="topic" value="security"/>
+<button type="submit">Add question</button></form></section>
+<section class="card">{% for q in questions %}<article class="card" style="margin:.4rem 0">
+<span class="pill">{{ q.topic }}</span><div>{{ q.prompt }}</div>
+<form method="post" action="/ui/attempt"><input type="hidden" name="question_id" value="{{ q.id }}"/>
+<input name="response" placeholder="your answer" required/><button type="submit">Submit</button></form></article>{% endfor %}
+<h3>Attempts</h3>{% for a in attempts %}<div class="sub">{% if a.correct %}✓{% else %}✗{% endif %} score={{ a.score }} {{ a.coaching[:120] }}</div>{% endfor %}
+</section></div></main></body></html>
